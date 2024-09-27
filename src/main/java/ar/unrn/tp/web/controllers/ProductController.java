@@ -18,25 +18,25 @@ public class ProductController implements ProductContract {
     private final ProductService productService;
 
     @Override
-    public ResponseEntity<Void> crearProducto(ProductDTO payload) {
+    public ResponseEntity<Void> crearProducto(ProductCreateDTO payload) {
 
         this.productService.crearProducto(
                 String.valueOf(payload.getCode()),
                 payload.getDescription(),
                 payload.getPrice(),
-                payload.getCategory().getId(),
-                payload.getBrand().getId()
+                payload.getIdCategory(),
+                payload.getIdBrand()
         );
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Override
-    public ResponseEntity<Void> modificarProducto(Long id, ProductDTO payload) {
+    public ResponseEntity<Void> modificarProducto(Long id, ProductCreateDTO payload) {
 
         this.productService.modificarProducto(id,
                 payload.getDescription(),
-                payload.getCategory().getId(),
-                payload.getBrand().getId(),
+                payload.getIdCategory(),
+                payload.getIdBrand(),
                 payload.getPrice()
         );
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

@@ -1,7 +1,7 @@
 package ar.unrn.tp.web.controllers;
 
 import ar.unrn.tp.api.ClientService;
-import ar.unrn.tp.domain.dto.ClientDTO;
+import ar.unrn.tp.domain.dto.ClientCreateDTO;
 import ar.unrn.tp.domain.dto.CreditCardDTO;
 import ar.unrn.tp.web.contracts.ClientContract;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class ClientController implements ClientContract {
     private final ClientService clientService;
 
     @Override
-    public ResponseEntity<Void> crearCliente(ClientDTO payload) {
+    public ResponseEntity<Void> crearCliente(ClientCreateDTO payload) {
 
         this.clientService.crearCliente(
                 payload.getName(),
@@ -32,7 +32,7 @@ public class ClientController implements ClientContract {
     }
 
     @Override
-    public ResponseEntity<Void> modificarCliente(Long id, ClientDTO payload) {
+    public ResponseEntity<Void> modificarCliente(Long id, ClientCreateDTO payload) {
 
         this.clientService.modificarCliente(id,
                 payload.getName(),
