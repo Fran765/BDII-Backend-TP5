@@ -4,9 +4,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
+import lombok.Getter;
+
 import java.time.LocalDate;
 
-@Data
+@Getter
 @Entity
 public class BuyDiscount extends Discount {
 

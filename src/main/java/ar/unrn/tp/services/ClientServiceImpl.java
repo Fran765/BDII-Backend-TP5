@@ -13,7 +13,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
-import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,11 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
 
     @Autowired
-    private final TransactionService transactionService;
+    private TransactionService transactionService;
 
     @Override
     public void crearCliente(String nombre, String apellido, Integer dni, String email) {
@@ -113,11 +111,12 @@ public class ClientServiceImpl implements ClientService {
             TypedQuery<Client> query = em.createQuery(consultaCrear, Client.class);
             query.setParameter("dni", dni);
 
+            // Si se encuentra un cliente, lanzar excepción
             query.getSingleResult();
+            throw new ClientException("Ya existe un cliente con el DNI proporcionado: " + dni);
 
         } catch (NoResultException e) {
-            throw new ClientException("No se encontro un cliente con el DNI proporcionado: " + e.getMessage());
-
+            // No se encontró ningún cliente, no hacer nada
         } catch (Exception e) {
             throw new ClientException("Error al querer recuperar el cliente por dni: " + e.getMessage());
         }

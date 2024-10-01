@@ -1,9 +1,10 @@
 package ar.unrn.tp.web.controllers;
 
 import ar.unrn.tp.api.ProductService;
+import ar.unrn.tp.domain.dto.ProductCreateDTO;
 import ar.unrn.tp.domain.dto.ProductDTO;
 import ar.unrn.tp.web.contracts.ProductContract;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,10 +13,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/productos")
-@RequiredArgsConstructor
 public class ProductController implements ProductContract {
 
-    private final ProductService productService;
+    @Autowired
+    private ProductService productService;
 
     @Override
     public ResponseEntity<Void> crearProducto(ProductCreateDTO payload) {

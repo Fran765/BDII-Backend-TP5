@@ -1,7 +1,7 @@
 package ar.unrn.tp.api;
 
-import jakarta.persistence.EntityManager;
 import java.util.function.Consumer;
+import jakarta.persistence.EntityManager;
 
 public interface TransactionService {
     void executeInTransaction(Consumer<EntityManager> action);

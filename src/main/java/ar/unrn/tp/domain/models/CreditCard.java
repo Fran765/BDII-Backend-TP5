@@ -1,7 +1,6 @@
 package ar.unrn.tp.domain.models;
 
 import ar.unrn.tp.exceptions.CardException;
-
 import jakarta.persistence.*;
 import lombok.Data;
 

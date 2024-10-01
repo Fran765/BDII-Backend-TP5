@@ -2,7 +2,6 @@ package ar.unrn.tp.domain.dto;
 
 import ar.unrn.tp.domain.models.ProductSale;
 import ar.unrn.tp.domain.models.Sale;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
@@ -14,11 +13,11 @@ import java.util.stream.Collectors;
 @Data
 @Builder
 public class SaleDTO {
-    @NotBlank
+    @NotNull
     private LocalDateTime dateAndTime;
     @NotNull
     private ClientDTO client;
-    @NotBlank
+    @NotNull
     private List<ProductSaleDTO> products;
     @Positive
     private double totalPrice;

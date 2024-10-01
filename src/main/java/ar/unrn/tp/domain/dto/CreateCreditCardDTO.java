@@ -4,27 +4,26 @@ import ar.unrn.tp.domain.models.CreditCard;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
 @Builder
-public class CreditCardDTO {
-
+@Getter
+public class CreateCreditCardDTO {
     private Long id;
     @NotNull
     private Long number;
     @NotNull
-    private CardTypeDTO type;
+    private Long idCardType;
     @NotNull
     private boolean activate;
     @Positive
     private double funds;
 
-    public static CreditCardDTO fromDomain(CreditCard card){
-        return CreditCardDTO.builder()
+    public static CreateCreditCardDTO fromDomain(CreditCard card){
+        return CreateCreditCardDTO.builder()
                 .id(card.getId())
                 .number(card.getNumber())
-                .type(CardTypeDTO.fromDomain(card.getType()))
+                .idCardType(card.getType().getId())
                 .activate(card.isActivate())
                 .funds(card.getFunds())
                 .build();

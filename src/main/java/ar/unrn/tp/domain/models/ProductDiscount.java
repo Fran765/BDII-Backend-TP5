@@ -3,9 +3,12 @@ package ar.unrn.tp.domain.models;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Getter;
 
 import java.time.LocalDate;
+
 @Entity
+@Getter
 public class ProductDiscount extends Discount {
     @ManyToOne
     @JoinColumn(name = "brand_id")

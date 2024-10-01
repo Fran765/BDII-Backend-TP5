@@ -1,7 +1,6 @@
 package ar.unrn.tp.domain.models;
 
 import ar.unrn.tp.exceptions.ProductException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;

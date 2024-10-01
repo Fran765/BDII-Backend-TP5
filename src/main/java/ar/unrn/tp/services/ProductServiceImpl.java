@@ -11,19 +11,18 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
-import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
-    private final TransactionService transactionService;
+    @Autowired
+    private TransactionService transactionService;
 
     @Override
     public void crearProducto(String codigo, String descripcion, double precio, Long idCategoria, Long idMarca) {
@@ -78,7 +77,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ProductDTO> listarProductos() {
 
         List<Product> products = new ArrayList<>();

@@ -2,22 +2,22 @@ package ar.unrn.tp.web.controllers;
 
 import ar.unrn.tp.api.ClientService;
 import ar.unrn.tp.domain.dto.ClientCreateDTO;
+import ar.unrn.tp.domain.dto.CreateCreditCardDTO;
 import ar.unrn.tp.domain.dto.CreditCardDTO;
 import ar.unrn.tp.web.contracts.ClientContract;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/clientes")
-@RequiredArgsConstructor
 public class ClientController implements ClientContract {
 
-    private final ClientService clientService;
+    @Autowired
+    private ClientService clientService;
 
     @Override
     public ResponseEntity<Void> crearCliente(ClientCreateDTO payload) {
@@ -32,9 +32,9 @@ public class ClientController implements ClientContract {
     }
 
     @Override
-    public ResponseEntity<Void> modificarCliente(Long id, ClientCreateDTO payload) {
+    public ResponseEntity<Void> modificarCliente(Long idClient, ClientCreateDTO payload) {
 
-        this.clientService.modificarCliente(id,
+        this.clientService.modificarCliente(idClient,
                 payload.getName(),
                 payload.getSurname(),
                 payload.getEmail()
@@ -43,18 +43,18 @@ public class ClientController implements ClientContract {
     }
 
     @Override
-    public ResponseEntity<Void> agregarTarjeta(Long id, CreditCardDTO payload) {
+    public ResponseEntity<Void> agregarTarjeta(Long idClient, CreateCreditCardDTO payload) {
 
-        this.clientService.agregarTarjeta(id,
+        this.clientService.agregarTarjeta(idClient,
                 String.valueOf(payload.getNumber()),
-                payload.getType().getId()
+                payload.getIdCardType()
         );
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     @Override
-    public ResponseEntity<List<CreditCardDTO>> listarTarjetas(Long id) {
-        List<CreditCardDTO> tarjetas = this.clientService.listarTarjetas(id);
+    public ResponseEntity<List<CreditCardDTO>> listarTarjetas(Long idClient) {
+        List<CreditCardDTO> tarjetas = this.clientService.listarTarjetas(idClient);
 
         return ResponseEntity.ok(tarjetas);
     }

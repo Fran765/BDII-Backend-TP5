@@ -1,17 +1,23 @@
 package ar.unrn.tp.domain.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
+
 import java.time.LocalDate;
 
-@Data
+@Getter
 public class DiscountDTO {
     @NotNull
     private float percent;
-    @NotBlank
+    @NotNull
     private LocalDate startDate;
-    @NotBlank
+    @NotNull
     private LocalDate endDate;
 
+    public DiscountDTO(float percent, LocalDate startDate, LocalDate endDate) {
+        this.percent = percent;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
 }

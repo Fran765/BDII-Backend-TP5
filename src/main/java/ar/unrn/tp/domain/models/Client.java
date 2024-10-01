@@ -1,8 +1,8 @@
 package ar.unrn.tp.domain.models;
 
 import ar.unrn.tp.exceptions.CardException;
-import ar.unrn.tp.utils.Email;
 import jakarta.persistence.*;
+import ar.unrn.tp.utils.Email;
 import lombok.Data;
 import java.util.List;
 import java.util.Objects;

@@ -15,23 +15,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class SaleServiceImpl implements SaleService {
-
-    private final TransactionService transactionService;
+    @Autowired
+    private TransactionService transactionService;
     private Shop shop;
 
     @Override
     public void realizarVenta(Long idCliente, List<Long> productos, Long idTarjeta) {
-
-        if (idCliente == null)
-            throw new ClientException("El id del cliente es nulo: " + idCliente);
-
-        if(idTarjeta == null)
-            throw new CardException("El id de la tarjeta es nulo: " + idTarjeta);
 
         List<Product> productList = this.obtenerProductosSeleccionados(productos);
         ShoppingCart cart = crearCarritoConProductos(productList);

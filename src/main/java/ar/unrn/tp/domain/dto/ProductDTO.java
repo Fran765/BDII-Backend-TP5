@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 @Builder
 public class ProductDTO {
-    @NotNull
+
     private Long id;
     @NotNull
     private Integer code;

@@ -23,7 +23,7 @@ public class ProductCreateDTO {
     @Positive
     private double price;
 
-        public static ProductCreateDTO fromDomain(Product product){
+    public static ProductCreateDTO fromDomain(Product product){
         return ProductCreateDTO.builder()
                 .id(product.getId())
                 .code(product.getCode())
