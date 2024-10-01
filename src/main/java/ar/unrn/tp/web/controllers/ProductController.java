@@ -3,6 +3,9 @@ package ar.unrn.tp.web.controllers;
 import ar.unrn.tp.api.ProductService;
 import ar.unrn.tp.domain.dto.ProductCreateDTO;
 import ar.unrn.tp.domain.dto.ProductDTO;
+import ar.unrn.tp.exceptions.ApplicationException;
+import ar.unrn.tp.exceptions.ProductException;
+import ar.unrn.tp.exceptions.SaleException;
 import ar.unrn.tp.web.contracts.ProductContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,33 +24,55 @@ public class ProductController implements ProductContract {
     @Override
     public ResponseEntity<Void> crearProducto(ProductCreateDTO payload) {
 
-        this.productService.crearProducto(
-                String.valueOf(payload.getCode()),
-                payload.getDescription(),
-                payload.getPrice(),
-                payload.getIdCategory(),
-                payload.getIdBrand()
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        try{
+
+            this.productService.crearProducto(
+                    String.valueOf(payload.getCode()),
+                    payload.getDescription(),
+                    payload.getPrice(),
+                    payload.getIdCategory(),
+                    payload.getIdBrand()
+            );
+
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+
+        } catch (ProductException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
+        } catch (ApplicationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
+        }
     }
 
     @Override
     public ResponseEntity<Void> modificarProducto(Long id, ProductCreateDTO payload) {
+        try{
+            this.productService.modificarProducto(id,
+                    payload.getDescription(),
+                    payload.getIdCategory(),
+                    payload.getIdBrand(),
+                    payload.getPrice()
+            );
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
-        this.productService.modificarProducto(id,
-                payload.getDescription(),
-                payload.getIdCategory(),
-                payload.getIdBrand(),
-                payload.getPrice()
-        );
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch(ProductException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
+
+        } catch (ApplicationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
+        }
     }
 
     @Override
     public ResponseEntity<List<ProductDTO>> listarProductos() {
+        try {
+            List<ProductDTO> productos = this.productService.listarProductos();
 
-        List<ProductDTO> productos = this.productService.listarProductos();
+            return ResponseEntity.ok(productos);
+        } catch (ProductException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
 
-        return ResponseEntity.ok(productos);
+        } catch (ApplicationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
+        }
     }
 }

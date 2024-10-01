@@ -42,6 +42,13 @@ public class SaleServiceImpl implements SaleService {
                     throw new CardException("La tarjeta no corresponde para este cliente.");
 
                 Sale newSale = shop.completPurchase(cart, card);
+
+                List<ProductSale> newProdutsSale = newSale.getProducts();
+
+                for (ProductSale productSale: newProdutsSale) {
+                    em.persist(productSale);
+                }
+
                 em.persist(newSale);
 
             } catch (NoResultException e){
@@ -75,6 +82,26 @@ public class SaleServiceImpl implements SaleService {
         return montoTotal;
     }
 
+    @Override
+    public List<SaleDTO> ventas() {
+
+        List<Sale> ventas = new ArrayList<>();
+
+        this.transactionService.executeInTransaction(em -> {
+            try {
+                TypedQuery<Sale> sql = em.createQuery("SELECT s FROM Sale s", Sale.class);
+                ventas.addAll(sql.getResultList());
+
+            } catch (PersistenceException e){
+                throw new SaleException("Error al recuperar las ventas: " + e.getMessage());
+            }
+        });
+
+        return ventas.stream()
+                .map(SaleDTO::fromDomain)
+                .collect(Collectors.toList());
+    }
+
     private CreditCard getCreditCard(Long idTarjeta) {
         AtomicReference<CreditCard> cardReference = new AtomicReference<>();
 
@@ -96,26 +123,6 @@ public class SaleServiceImpl implements SaleService {
         });
 
         return cardReference.get();
-    }
-
-    @Override
-    public List<SaleDTO> ventas() {
-
-        List<Sale> ventas = new ArrayList<>();
-
-        this.transactionService.executeInTransaction(em -> {
-            try {
-                TypedQuery<Sale> sql = em.createQuery("SELECT s FROM Sale s", Sale.class);
-                ventas.addAll(sql.getResultList());
-
-            } catch (PersistenceException e){
-                throw new SaleException("Error al recuperar las ventas: " + e.getMessage());
-            }
-        });
-
-        return ventas.stream()
-                .map(SaleDTO::fromDomain)
-                .collect(Collectors.toList());
     }
 
     private void inicializarNegocio(){
