@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 
 @Mapper
 public interface ProductMapper {
+    @Mapping(target = "id", ignore = true)
     @Mapping(source = "category.name", target = "category")
     @Mapping(source = "brand.name", target = "brand")
     ProductSale convertProductToProductSale(Product product);

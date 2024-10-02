@@ -43,12 +43,6 @@ public class SaleServiceImpl implements SaleService {
 
                 Sale newSale = shop.completPurchase(cart, card);
 
-                List<ProductSale> newProdutsSale = newSale.getProducts();
-
-                for (ProductSale productSale: newProdutsSale) {
-                    em.persist(productSale);
-                }
-
                 em.persist(newSale);
 
             } catch (NoResultException e){
