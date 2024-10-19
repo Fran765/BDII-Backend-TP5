@@ -1,6 +1,7 @@
 package ar.unrn.tp.domain.dto;
 
 import ar.unrn.tp.domain.models.ProductDiscount;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;

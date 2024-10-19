@@ -32,10 +32,10 @@ public class DiscountController implements DiscountContract {
             return ResponseEntity.status(HttpStatus.CREATED).build();
 
         } catch(DiscountException e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 
         } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 
@@ -49,10 +49,10 @@ public class DiscountController implements DiscountContract {
             );
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch(DiscountException e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 
         } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 
@@ -64,10 +64,10 @@ public class DiscountController implements DiscountContract {
             return ResponseEntity.ok(descuentos);
 
         } catch(DiscountException e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 
         } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 }

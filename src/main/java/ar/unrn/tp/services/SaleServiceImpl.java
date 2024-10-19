@@ -1,5 +1,6 @@
 package ar.unrn.tp.services;
 
+import ar.unrn.tp.api.InvoiceNumberService;
 import ar.unrn.tp.api.SaleService;
 import ar.unrn.tp.api.TransactionService;
 import ar.unrn.tp.domain.dto.SaleDTO;
@@ -9,10 +10,12 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TypedQuery;
-import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -23,6 +26,9 @@ import org.springframework.stereotype.Service;
 public class SaleServiceImpl implements SaleService {
     @Autowired
     private TransactionService transactionService;
+
+    @Autowired
+    private InvoiceNumberService invoiceNumberService;
     private Shop shop;
 
     @Override
@@ -42,6 +48,10 @@ public class SaleServiceImpl implements SaleService {
                     throw new CardException("La tarjeta no corresponde para este cliente.");
 
                 Sale newSale = shop.completPurchase(cart, card);
+
+                String newInvoiceNumber = this.invoiceNumberService.generateInvoiceNumber();
+
+                newSale.setInvoiceNumber(newInvoiceNumber);
 
                 em.persist(newSale);
 

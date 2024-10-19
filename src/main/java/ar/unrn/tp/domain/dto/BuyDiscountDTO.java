@@ -1,6 +1,7 @@
 package ar.unrn.tp.domain.dto;
 
 import ar.unrn.tp.domain.models.BuyDiscount;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NonNull;
 import java.time.LocalDate;

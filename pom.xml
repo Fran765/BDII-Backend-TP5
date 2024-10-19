@@ -3,15 +3,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<!-- Parent project for Spring Boot -->
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.3.3</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 
-	<!-- Project-specific information -->
 	<groupId>ar.unrn.tp</groupId>
 	<artifactId>main</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -19,12 +17,10 @@
 	<description>Backend para los trabajos practicos</description>
 	<url>http://maven.apache.org</url>
 
-	<!-- Set the Java version for the project -->
 	<properties>
 		<java.version>17</java.version>
 	</properties>
 
-	<!-- Project Dependencies -->
 	<dependencies>
 		<!-- =================== DEPENDENCIAS DE PERSISTENCIA =================== -->
 
@@ -94,7 +90,6 @@
 
     </dependencies>
 
-	<!-- Build plugins -->
 	<build>
 		<plugins>
 			<plugin>

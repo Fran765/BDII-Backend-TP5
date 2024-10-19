@@ -5,6 +5,7 @@ import ar.unrn.tp.domain.dto.ProductCreateDTO;
 import ar.unrn.tp.domain.dto.ProductDTO;
 import ar.unrn.tp.exceptions.ApplicationException;
 import ar.unrn.tp.exceptions.ProductException;
+import ar.unrn.tp.exceptions.ProductUpdateException;
 import ar.unrn.tp.exceptions.SaleException;
 import ar.unrn.tp.web.contracts.ProductContract;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,28 +38,31 @@ public class ProductController implements ProductContract {
             return ResponseEntity.status(HttpStatus.CREATED).build();
 
         } catch (ProductException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 
     @Override
-    public ResponseEntity<Void> modificarProducto(Long id, ProductCreateDTO payload) {
-        try{
-            this.productService.modificarProducto(id,
+    public ResponseEntity<?> modificarProducto(Long id, ProductCreateDTO payload) {
+        try {
+            ProductDTO product = this.productService.modificarProducto(id,
                     payload.getDescription(),
                     payload.getIdCategory(),
                     payload.getIdBrand(),
                     payload.getPrice()
             );
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(product);
 
-        } catch(ProductException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
+        } catch (ProductUpdateException p) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(p.getMessage());
+
+        } catch (ProductException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 
         } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
@@ -69,10 +73,10 @@ public class ProductController implements ProductContract {
 
             return ResponseEntity.ok(productos);
         } catch (ProductException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 
         } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 }

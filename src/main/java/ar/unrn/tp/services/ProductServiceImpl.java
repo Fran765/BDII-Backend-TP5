@@ -7,16 +7,15 @@ import ar.unrn.tp.domain.models.Product;
 import ar.unrn.tp.domain.models.BrandEntity;
 import ar.unrn.tp.domain.models.CategoryEntity;
 import ar.unrn.tp.exceptions.ProductException;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.NonUniqueResultException;
-import jakarta.persistence.TypedQuery;
+import ar.unrn.tp.exceptions.ProductUpdateException;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -49,7 +48,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void modificarProducto(Long idProducto, String descripcion, Long idCategoria, Long idMarca, double price) {
+    public ProductDTO modificarProducto(Long idProducto, String descripcion, Long idCategoria, Long idMarca, double price) {
+
+        AtomicReference<Product> productUpdated = new AtomicReference<>();
 
         this.transactionService.executeInTransaction(em -> {
             String queryGetProducts = "SELECT p FROM Product p WHERE p.id = :idProduct";
@@ -60,20 +61,25 @@ public class ProductServiceImpl implements ProductService {
             CategoryEntity category = getObjectDiscountById(em, idCategoria, false, CategoryEntity.class);
 
             try {
-                Product productDB = query.getSingleResult();
+                productUpdated.set(query.getSingleResult());
 
-                productDB.updateDescription(descripcion);
-                productDB.updateCategory(category);
-                productDB.updateBrand(brand);
-                productDB.updatePrice(price);
+                productUpdated.get().updateDescription(descripcion);
+                productUpdated.get().updateCategory(category);
+                productUpdated.get().updateBrand(brand);
+                productUpdated.get().updatePrice(price);
 
             } catch (NoResultException e) {
                 throw new ProductException("No se encontró ningún producto en la base de datos.");
+
+            } catch (OptimisticLockException e) {
+                throw new ProductUpdateException("El producto ha sido actualizado por otro usuario. Por favor, recargue la página e intente nuevamente.");
 
             } catch (Exception e) {
                 throw new ProductException("Error al actualizar el producto: " + e.getMessage());
             }
         });
+
+        return ProductDTO.fromDomain(productUpdated.get());
     }
 
     @Override

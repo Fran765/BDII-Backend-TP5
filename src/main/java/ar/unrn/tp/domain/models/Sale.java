@@ -19,6 +19,8 @@ public class Sale {
     private List<ProductSale> products;
     private double totalPrice;
 
+    private String invoiceNumber;
+
     public Sale(Client client, List<ProductSale> products, double totalPrice) {
 
         this.dateAndTime = LocalDateTime.now();
@@ -30,4 +32,7 @@ public class Sale {
     protected Sale() {
     }
 
+    public void setInvoiceNumber(String invoiceNumber) {
+        this.invoiceNumber = invoiceNumber;
+    }
 }

@@ -10,7 +10,7 @@ import java.util.Objects;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer code;
     private String description;
@@ -24,6 +24,9 @@ public class Product {
     private BrandEntity brand;
 
     private double price;
+
+    @Version
+    private Long version;
 
     protected Product() {
     }

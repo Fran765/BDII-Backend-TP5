@@ -13,7 +13,7 @@ public interface ProductContract {
     ResponseEntity<Void> crearProducto(@RequestBody @Valid ProductCreateDTO payload);
 
     @PutMapping("/modificar/{id}")
-    ResponseEntity<Void> modificarProducto(@PathVariable Long id, @RequestBody @Valid ProductCreateDTO payload);
+    ResponseEntity<?> modificarProducto(@PathVariable Long id, @RequestBody @Valid ProductCreateDTO payload);
 
     @GetMapping("/")
     ResponseEntity<List<ProductDTO>> listarProductos();

@@ -12,7 +12,10 @@ public class CreateBuyDiscountDTO extends DiscountDTO{
     @NonNull
     private final Long idCardType;
 
-    public CreateBuyDiscountDTO(float percent, @NonNull LocalDate startDate, @NonNull LocalDate endDate, @NonNull Long idCardType) {
+    public CreateBuyDiscountDTO(float percent,
+                                @NonNull LocalDate startDate,
+                                @NonNull LocalDate endDate,
+                                @NonNull Long idCardType) {
         super(percent, startDate, endDate);
         this.idCardType = idCardType;
     }
