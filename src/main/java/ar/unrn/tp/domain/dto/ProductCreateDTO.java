@@ -22,6 +22,8 @@ public class ProductCreateDTO {
     private Long idBrand;
     @Positive
     private double price;
+    @NotNull
+    private Long version;
 
     public static ProductCreateDTO fromDomain(Product product){
         return ProductCreateDTO.builder()
@@ -31,6 +33,7 @@ public class ProductCreateDTO {
                 .idCategory(product.getCategory().getId())
                 .idBrand(product.getBrand().getId())
                 .price(product.getPrice())
+                .version(product.getVersion())
                 .build();
     }
 }

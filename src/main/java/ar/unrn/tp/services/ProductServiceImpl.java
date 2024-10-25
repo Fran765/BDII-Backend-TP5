@@ -12,6 +12,7 @@ import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDTO modificarProducto(Long idProducto, String descripcion, Long idCategoria, Long idMarca, double price) {
+    public ProductDTO modificarProducto(Long idProducto, String descripcion, Long idCategoria, Long idMarca, double price, Long version) {
 
         AtomicReference<Product> productUpdated = new AtomicReference<>();
 
@@ -62,6 +63,9 @@ public class ProductServiceImpl implements ProductService {
 
             try {
                 productUpdated.set(query.getSingleResult());
+
+                if(Objects.equals(productUpdated.get().getVersion(), version))
+                    throw new OptimisticLockException();
 
                 productUpdated.get().updateDescription(descripcion);
                 productUpdated.get().updateCategory(category);

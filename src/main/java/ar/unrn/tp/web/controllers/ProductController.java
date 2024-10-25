@@ -51,7 +51,8 @@ public class ProductController implements ProductContract {
                     payload.getDescription(),
                     payload.getIdCategory(),
                     payload.getIdBrand(),
-                    payload.getPrice()
+                    payload.getPrice(),
+                    payload.getVersion()
             );
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(product);
 
