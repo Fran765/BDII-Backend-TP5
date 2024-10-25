@@ -22,52 +22,31 @@ public class DiscountController implements DiscountContract {
 
     @Override
     public ResponseEntity<Void> crearDescuentoSobreTotal(CreateBuyDiscountDTO payload) {
-        try {
-            this.discountService.crearDescuentoSobreTotal(payload.getIdCardType(),
-                    payload.getStartDate(),
-                    payload.getEndDate(),
-                    payload.getPercent()
-            );
+        this.discountService.crearDescuentoSobreTotal(payload.getIdCardType(),
+                payload.getStartDate(),
+                payload.getEndDate(),
+                payload.getPercent()
+        );
 
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-
-        } catch(DiscountException e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-
-        } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Override
     public ResponseEntity<Void> crearDescuento(CreateProductDiscountDTO payload) {
-        try {
-            this.discountService.crearDescuento(payload.getIdBrand(),
-                    payload.getStartDate(),
-                    payload.getEndDate(),
-                    payload.getPercent()
-            );
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch(DiscountException e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 
-        } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        this.discountService.crearDescuento(payload.getIdBrand(),
+                payload.getStartDate(),
+                payload.getEndDate(),
+                payload.getPercent()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Override
     public ResponseEntity<List<DiscountDTO>> listarDescuentosActivos() {
-        try {
-            List<DiscountDTO> descuentos = this.discountService.listarDescuentosActivos();
 
-            return ResponseEntity.ok(descuentos);
+        List<DiscountDTO> descuentos = this.discountService.listarDescuentosActivos();
 
-        } catch(DiscountException e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-
-        } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        return ResponseEntity.ok(descuentos);
     }
 }

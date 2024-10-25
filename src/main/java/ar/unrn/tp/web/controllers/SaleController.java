@@ -24,46 +24,23 @@ public class    SaleController implements SaleContract {
     @Override
     public ResponseEntity<Void> realizarVenta(Long idCliente, Long idTarjeta, ProductRequestIds productos) {
 
-        try {
-
-            this.saleService.realizarVenta(idCliente, productos.getIdProducts(), idTarjeta);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-
-        } catch (CardException e) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(null); // 422 Unprocessable Entity
-        } catch (SaleException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
-        } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
-        }
+        this.saleService.realizarVenta(idCliente, productos.getIdProducts(), idTarjeta);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     @Override
     public ResponseEntity<Double> calcularMonto(Long idTarjeta, ProductRequestIds productos) {
-        try{
-            double response = this.saleService.calcularMonto(productos.getIdProducts(), idTarjeta);
 
-            return ResponseEntity.ok(response);
+        double response = this.saleService.calcularMonto(productos.getIdProducts(), idTarjeta);
 
-        } catch(CardException e){
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(null); // 422 Unprocessable Entity
-        } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
-        }
+        return ResponseEntity.ok(response);
     }
 
     @Override
     public ResponseEntity<List<SaleDTO>> ventas() {
-        try{
-            List<SaleDTO> sales = this.saleService.ventas();
 
-            return ResponseEntity.ok(sales);
+        List sales = this.saleService.ventas();
 
-        } catch (SaleException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
-
-        } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
-        }
+        return ResponseEntity.ok(sales);
     }
 }

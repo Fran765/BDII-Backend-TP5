@@ -24,80 +24,46 @@ public class ClientController implements ClientContract {
 
     @Override
     public ResponseEntity<Void> crearCliente(ClientCreateDTO payload) {
-        try {
-            this.clientService.crearCliente(
-                    payload.getName(),
-                    payload.getSurname(),
-                    payload.getDni(),
-                    payload.getEmail()
-            );
 
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+        this.clientService.crearCliente(
+                payload.getName(),
+                payload.getSurname(),
+                payload.getDni(),
+                payload.getEmail()
+        );
 
-        } catch (ClientException e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
-
-        } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Override
     public ResponseEntity<Void> modificarCliente(Long idClient, ClientCreateDTO payload) {
 
-        try {
-            this.clientService.modificarCliente(idClient,
-                    payload.getName(),
-                    payload.getSurname(),
-                    payload.getEmail()
-            );
 
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        this.clientService.modificarCliente(idClient,
+                payload.getName(),
+                payload.getSurname(),
+                payload.getEmail()
+        );
 
-        } catch (ClientException e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
-
-        } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
-        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Override
     public ResponseEntity<Void> agregarTarjeta(Long idClient, CreateCreditCardDTO payload) {
-        try{
-            this.clientService.agregarTarjeta(idClient,
-                    String.valueOf(payload.getNumber()),
-                    payload.getIdCardType()
-            );
 
-            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        this.clientService.agregarTarjeta(idClient,
+                String.valueOf(payload.getNumber()),
+                payload.getIdCardType()
+        );
 
-        } catch (ClientException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
-
-        } catch (CardException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-
-        } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
-        }
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     @Override
     public ResponseEntity<List<CreditCardDTO>> listarTarjetas(Long idClient) {
-        try {
-            List<CreditCardDTO> tarjetas = this.clientService.listarTarjetas(idClient);
 
-            return ResponseEntity.ok(tarjetas);
+        List<CreditCardDTO> tarjetas = this.clientService.listarTarjetas(idClient);
 
-        } catch (ClientException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 Internal Server Error
-
-        } catch (CardException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-
-        } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request
-        }
+        return ResponseEntity.ok(tarjetas);
     }
 }

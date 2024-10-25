@@ -24,60 +24,32 @@ public class ProductController implements ProductContract {
 
     @Override
     public ResponseEntity<Void> crearProducto(ProductCreateDTO payload) {
+        this.productService.crearProducto(
+                String.valueOf(payload.getCode()),
+                payload.getDescription(),
+                payload.getPrice(),
+                payload.getIdCategory(),
+                payload.getIdBrand()
+        );
 
-        try{
-
-            this.productService.crearProducto(
-                    String.valueOf(payload.getCode()),
-                    payload.getDescription(),
-                    payload.getPrice(),
-                    payload.getIdCategory(),
-                    payload.getIdBrand()
-            );
-
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-
-        } catch (ProductException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Override
-    public ResponseEntity<?> modificarProducto(Long id, ProductCreateDTO payload) {
-        try {
-            ProductDTO product = this.productService.modificarProducto(id,
-                    payload.getDescription(),
-                    payload.getIdCategory(),
-                    payload.getIdBrand(),
-                    payload.getPrice(),
-                    payload.getVersion()
-            );
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(product);
-
-        } catch (ProductUpdateException p) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(p.getMessage());
-
-        } catch (ProductException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-
-        } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public ResponseEntity<Void> modificarProducto(Long id, ProductCreateDTO payload) {
+        this.productService.modificarProducto(id,
+                payload.getDescription(),
+                payload.getIdCategory(),
+                payload.getIdBrand(),
+                payload.getPrice(),
+                payload.getVersion()
+        );
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Override
     public ResponseEntity<List<ProductDTO>> listarProductos() {
-        try {
-            List<ProductDTO> productos = this.productService.listarProductos();
-
-            return ResponseEntity.ok(productos);
-        } catch (ProductException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-
-        } catch (ApplicationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        List<ProductDTO> productos = this.productService.listarProductos();
+        return ResponseEntity.ok(productos);
     }
 }

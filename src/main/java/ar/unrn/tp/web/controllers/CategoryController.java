@@ -19,19 +19,12 @@ public class CategoryController implements CategoryContract {
 
     @Autowired
     private CategoryService categoryService;
+
     @Override
     public ResponseEntity<List<CategoryDTO>> listarTarjetas() {
 
-        try {
-            List<CategoryDTO> categorias = this.categoryService.listarCategorias();
+        List<CategoryDTO> categorias = this.categoryService.listarCategorias();
 
-            return ResponseEntity.ok(categorias);
-
-        } catch (CategoryException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        return ResponseEntity.ok(categorias);
     }
 }

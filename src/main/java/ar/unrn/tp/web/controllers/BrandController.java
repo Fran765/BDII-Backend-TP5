@@ -22,16 +22,8 @@ public class BrandController implements BrandContract {
 
     @Override
     public ResponseEntity<List<BrandDTO>> listarMarcas() {
-        try {
-            List<BrandDTO> marcas = this.brandService.listarMarcas();
+        List<BrandDTO> marcas = this.brandService.listarMarcas();
 
-            return ResponseEntity.ok(marcas);
-
-        } catch (BrandException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        return ResponseEntity.ok(marcas);
     }
 }

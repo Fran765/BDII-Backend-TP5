@@ -64,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
             try {
                 productUpdated.set(query.getSingleResult());
 
-                if(Objects.equals(productUpdated.get().getVersion(), version))
+                if(!Objects.equals(productUpdated.get().getVersion(), version))
                     throw new OptimisticLockException();
 
                 productUpdated.get().updateDescription(descripcion);
@@ -74,9 +74,6 @@ public class ProductServiceImpl implements ProductService {
 
             } catch (NoResultException e) {
                 throw new ProductException("No se encontró ningún producto en la base de datos.");
-
-            } catch (OptimisticLockException e) {
-                throw new ProductUpdateException("El producto ha sido actualizado por otro usuario. Por favor, recargue la página e intente nuevamente.");
 
             } catch (Exception e) {
                 throw new ProductException("Error al actualizar el producto: " + e.getMessage());
