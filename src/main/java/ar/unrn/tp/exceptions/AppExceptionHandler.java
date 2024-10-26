@@ -7,6 +7,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class AppExceptionHandler {
 
+    @ExceptionHandler(ProductUpdateException.class)
+    public ResponseEntity<ErrorResponse> handleProductUpdateException(ProductUpdateException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
     @ExceptionHandler(ApplicationException.class)
     public ResponseEntity<ErrorResponse> handleApplicationException(ApplicationException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
