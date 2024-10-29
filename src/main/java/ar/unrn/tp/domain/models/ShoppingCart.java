@@ -8,12 +8,6 @@ import java.util.stream.Stream;
 public class ShoppingCart {
 
     private List<Product> products;
-    private Client client;
-
-    public ShoppingCart(Client client) {
-        this.products = new ArrayList<>();
-        this.client = client;
-    }
 
     public ShoppingCart() {
         this.products = new ArrayList<>();
@@ -21,10 +15,6 @@ public class ShoppingCart {
 
     public Stream<Product> getProducts() {
         return products.stream();
-    }
-
-    public Client ownerOfCart() {
-        return this.client;
     }
 
     public void addProduct(Product pruduct) {

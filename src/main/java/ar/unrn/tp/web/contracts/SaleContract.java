@@ -19,4 +19,7 @@ public interface SaleContract {
 
     @GetMapping("/")
     ResponseEntity<List<SaleDTO>> ventas();
+
+    @GetMapping("/ultimas-ventas/{idCliente}")
+    ResponseEntity<List<SaleDTO>> ventasRecientes(@PathVariable Long idCliente);
 }

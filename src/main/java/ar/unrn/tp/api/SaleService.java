@@ -1,5 +1,7 @@
 package ar.unrn.tp.api;
 
+import ar.unrn.tp.domain.dto.SaleDTO;
+
 import java.util.List;
 
 public interface SaleService {
@@ -15,5 +17,8 @@ public interface SaleService {
     double calcularMonto(List<Long> productos, Long idTarjeta);
 
     //Devuelve todas las ventas realizadas
-    List ventas();
+    List<SaleDTO> ventas();
+
+    //Devuelve una lista de las ultimas 3 compras realizadas por un cliente
+    List<SaleDTO> ventasRecientes(Long idCliente);
 }

@@ -20,13 +20,13 @@ public class Shop {
         this.purchaseDiscounts = purchaseDiscounts;
     }
 
-    public Sale completPurchase(ShoppingCart cart, CreditCard card) {
+    public Sale completPurchase(Client client, ShoppingCart cart, CreditCard card) {
 
         double totalPrice = this.calcularTotal(cart, card);
 
         card.subtractFunds(totalPrice);
 
-        return new Sale(cart.ownerOfCart(), this.parseProducts(cart.getProducts()), totalPrice);
+        return new Sale(client, this.parseProducts(cart.getProducts()), totalPrice);
     }
 
 

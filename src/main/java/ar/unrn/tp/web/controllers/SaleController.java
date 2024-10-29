@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/ventas")
-public class    SaleController implements SaleContract {
+public class SaleController implements SaleContract {
 
     @Autowired
     private SaleService saleService;
@@ -39,8 +39,16 @@ public class    SaleController implements SaleContract {
     @Override
     public ResponseEntity<List<SaleDTO>> ventas() {
 
-        List sales = this.saleService.ventas();
+        List<SaleDTO> sales = this.saleService.ventas();
 
         return ResponseEntity.ok(sales);
+    }
+
+    @Override
+    public ResponseEntity<List<SaleDTO>> ventasRecientes(Long idCliente) {
+
+        List<SaleDTO> lastestSales = this.saleService.ventasRecientes(idCliente);
+
+        return ResponseEntity.ok(lastestSales);
     }
 }

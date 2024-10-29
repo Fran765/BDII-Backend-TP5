@@ -24,7 +24,8 @@ public class SaleDTO {
 
     public static SaleDTO fromDomain(Sale sale){
 
-        return SaleDTO.builder().dateAndTime(sale.getDateAndTime())
+        return SaleDTO.builder()
+                .dateAndTime(sale.getDateAndTime())
                 .client(ClientDTO.fromDomain(sale.getClient()))
                 .products(parseList(sale.getProducts()))
                 .client(ClientDTO.fromDomain(sale.getClient()))

@@ -39,7 +39,7 @@ public class CreditCard {
     }
 
     public void subtractFunds(double funds) {
-        if (this.sufficientBalance(funds) && this.activate)
+        if (!(this.sufficientBalance(funds) && this.activate))
             throw new CardException("Saldo insuficiente en la tarjeta.");
         this.funds -= funds;
     }
@@ -49,7 +49,7 @@ public class CreditCard {
     }
 
     private boolean sufficientBalance(double amount) {
-        return (this.funds < amount);
+        return (this.funds > amount);
     }
 
 

@@ -1,21 +1,23 @@
 package ar.unrn.tp.services;
 
 import ar.unrn.tp.api.InvoiceNumberService;
+import ar.unrn.tp.api.RedisService;
 import ar.unrn.tp.api.SaleService;
 import ar.unrn.tp.api.TransactionService;
 import ar.unrn.tp.domain.dto.SaleDTO;
 import ar.unrn.tp.domain.models.*;
 import ar.unrn.tp.exceptions.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TypedQuery;
 import org.mapstruct.factory.Mappers;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -30,6 +32,12 @@ public class SaleServiceImpl implements SaleService {
     @Autowired
     private InvoiceNumberService invoiceNumberService;
     private Shop shop;
+
+    @Autowired
+    private RedisService redisService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Override
     public void realizarVenta(Long idCliente, List<Long> productos, Long idTarjeta) {
@@ -47,7 +55,7 @@ public class SaleServiceImpl implements SaleService {
                 if (!client.isMyCard(card))
                     throw new CardException("La tarjeta no corresponde para este cliente.");
 
-                Sale newSale = shop.completPurchase(cart, card);
+                Sale newSale = shop.completPurchase(client, cart, card);
 
                 String newInvoiceNumber = this.invoiceNumberService.generateInvoiceNumber();
 
@@ -65,6 +73,9 @@ public class SaleServiceImpl implements SaleService {
                 throw new SaleException("Error al querer realizazr la venta: " + e.getMessage());
             }
         });
+
+        String cacheKey = "ultimas/ventas:" + idCliente;
+        this.redisService.executeInRedis(jedis -> jedis.del(cacheKey));
     }
 
     @Override
@@ -104,6 +115,64 @@ public class SaleServiceImpl implements SaleService {
         return ventas.stream()
                 .map(SaleDTO::fromDomain)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SaleDTO> ventasRecientes(Long idCliente){
+        String key = "ultimas/ventas:" + idCliente;
+
+        List<SaleDTO> ventas = new ArrayList<>();
+
+        this.redisService.executeInRedis( jedis -> {
+            try{
+                if (jedis.exists(key)) {
+                    String saleJson = jedis.get(key);
+                    SaleDTO[] sales = objectMapper.readValue(saleJson, SaleDTO[].class);
+                    ventas().addAll(Arrays.asList(sales));
+                } else {
+
+                    List<Sale> sales = listarVentasPorCliente(idCliente);
+                    if(sales.isEmpty())
+                        return;
+
+                    String saleJson = objectMapper.writeValueAsString(sales);
+                    jedis.set(key, saleJson);
+
+                    jedis.expire(key, 120);
+
+                    ventas().addAll(sales.stream()
+                                    .map(SaleDTO::fromDomain)
+                                    .toList());
+                }
+            }catch (JsonProcessingException e){
+                throw new SaleException("Error al procesar JSON con Jackson");
+            }
+        });
+
+        return ventas;
+    }
+
+    private List<Sale> listarVentasPorCliente(Long idCliente) {
+        try{
+            List<Sale> ventas = new ArrayList<>();
+
+            this.transactionService.executeInTransaction(em -> {
+                try {
+                    TypedQuery<Sale> query = em.createQuery("SELECT s FROM Sale s WHERE s.client.id = :idCliente ORDER BY s.dateAndTime DESC", Sale.class);
+                    query.setParameter("idCliente", idCliente);
+                    query.setMaxResults(3);
+
+                    ventas.addAll(query.getResultList());
+
+                } catch (PersistenceException e) {
+                    throw new SaleException("Error al recuperar las ventas: " + e.getMessage());
+                }
+            });
+
+            return ventas;
+        } catch(Exception e){
+            throw new SaleException(e.getMessage());
+        }
     }
 
     private CreditCard getCreditCard(Long idTarjeta) {
