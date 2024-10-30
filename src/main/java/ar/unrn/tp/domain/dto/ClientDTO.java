@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 @Builder
 public class ClientDTO {
     @NotNull
+    private Long id;
+    @NotNull
     private Integer dni;
     @NotBlank
     private String name;
@@ -25,6 +27,7 @@ public class ClientDTO {
 
     public static ClientDTO fromDomain(Client client){
         return ClientDTO.builder()
+                .id(client.getId())
                 .dni(client.getDni())
                 .name(client.getName())
                 .surname(client.getSurname())

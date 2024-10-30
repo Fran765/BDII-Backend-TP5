@@ -18,15 +18,18 @@ public class Sale {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductSale> products;
     private double totalPrice;
+    @ManyToOne
+    private CreditCard card;
 
     private String invoiceNumber;
 
-    public Sale(Client client, List<ProductSale> products, double totalPrice) {
+    public Sale(Client client, List<ProductSale> products, double totalPrice, CreditCard card) {
 
         this.dateAndTime = LocalDateTime.now();
         this.client = client;
         this.totalPrice = totalPrice;
         this.products = products;
+        this.card = card;
     }
 
     protected Sale() {

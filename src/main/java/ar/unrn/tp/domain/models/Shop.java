@@ -26,7 +26,7 @@ public class Shop {
 
         card.subtractFunds(totalPrice);
 
-        return new Sale(client, this.parseProducts(cart.getProducts()), totalPrice);
+        return new Sale(client, this.parseProducts(cart.getProducts()), totalPrice, card);
     }
 
 

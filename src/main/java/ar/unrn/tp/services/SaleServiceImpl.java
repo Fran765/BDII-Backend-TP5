@@ -8,21 +8,22 @@ import ar.unrn.tp.domain.dto.SaleDTO;
 import ar.unrn.tp.domain.models.*;
 import ar.unrn.tp.exceptions.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TypedQuery;
 import org.mapstruct.factory.Mappers;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
 @Service
 public class SaleServiceImpl implements SaleService {
@@ -37,7 +38,7 @@ public class SaleServiceImpl implements SaleService {
     private RedisService redisService;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private Gson gson;
 
     @Override
     public void realizarVenta(Long idCliente, List<Long> productos, Long idTarjeta) {
@@ -64,13 +65,13 @@ public class SaleServiceImpl implements SaleService {
                 em.persist(newSale);
 
             } catch (NoResultException e){
-                throw new ApplicationException("No se econtraron resultados para el id de cliente o la tarjeta: " + e.getMessage());
+                throw new ApplicationException("No se econtraron resultados para el id de cliente o la tarjeta: " + e.getMessage(), e);
 
             } catch (NonUniqueResultException e) {
-                throw new ApplicationException("Se encontraron múltiples resultados para este ID de clientes o tarjeta: " + e.getMessage());
+                throw new ApplicationException("Se encontraron múltiples resultados para este ID de clientes o tarjeta: " + e.getMessage(), e);
 
             }catch (Exception e) {
-                throw new SaleException("Error al querer realizazr la venta: " + e.getMessage());
+                throw new SaleException("Error al querer realizazr la venta: " + e.getMessage(), e);
             }
         });
 
@@ -108,7 +109,7 @@ public class SaleServiceImpl implements SaleService {
                 ventas.addAll(sql.getResultList());
 
             } catch (PersistenceException e){
-                throw new SaleException("Error al recuperar las ventas: " + e.getMessage());
+                throw new SaleException("Error al recuperar las ventas: " + e.getMessage(), e);
             }
         });
 
@@ -119,36 +120,44 @@ public class SaleServiceImpl implements SaleService {
 
     @Override
     public List<SaleDTO> ventasRecientes(Long idCliente){
-        String key = "ultimas/ventas:" + idCliente;
 
+        String key = "ultimas/ventas:" + idCliente;
         List<SaleDTO> ventas = new ArrayList<>();
 
         this.redisService.executeInRedis( jedis -> {
             try{
                 if (jedis.exists(key)) {
+
                     String saleJson = jedis.get(key);
-                    SaleDTO[] sales = objectMapper.readValue(saleJson, SaleDTO[].class);
-                    ventas().addAll(Arrays.asList(sales));
+                    Type listType = new TypeToken<List<SaleDTO>>() {}.getType();
+                    List<SaleDTO> sales = gson.fromJson(saleJson, listType);
+                    ventas.addAll(sales);
+
                 } else {
 
                     List<Sale> sales = listarVentasPorCliente(idCliente);
-                    if(sales.isEmpty())
-                        return;
 
-                    String saleJson = objectMapper.writeValueAsString(sales);
-                    jedis.set(key, saleJson);
-
-                    jedis.expire(key, 120);
-
-                    ventas().addAll(sales.stream()
-                                    .map(SaleDTO::fromDomain)
-                                    .toList());
+                    if (!sales.isEmpty()) {
+                        List<SaleDTO> salesDTO = sales.stream()
+                                .map(SaleDTO::fromDomain)
+                                .toList();
+                        String saleJson = gson.toJson(salesDTO);
+                        jedis.set(key, saleJson);
+                        jedis.expire(key, 120);
+                        ventas.addAll(salesDTO);
+                    }
                 }
-            }catch (JsonProcessingException e){
-                throw new SaleException("Error al procesar JSON con Jackson");
+
+            } catch (JsonSyntaxException e) {
+                throw new SaleException("Error al deserializar el JSON de ventas/ " + e.getMessage(), e);
+
+            } catch (JedisConnectionException e) {
+                throw new SaleException("Error al conectarse a Redis / " + e.getMessage(), e);
+
+            } catch (Exception e) {
+                throw new SaleException("Error inesperado en ventasRecientes/ " + e.getMessage(), e);
             }
         });
-
         return ventas;
     }
 
@@ -165,7 +174,7 @@ public class SaleServiceImpl implements SaleService {
                     ventas.addAll(query.getResultList());
 
                 } catch (PersistenceException e) {
-                    throw new SaleException("Error al recuperar las ventas: " + e.getMessage());
+                    throw new SaleException("Error al recuperar las ventas: " + e.getMessage(), e);
                 }
             });
 
@@ -185,13 +194,13 @@ public class SaleServiceImpl implements SaleService {
                 cardReference.set(card);
 
             } catch (NoResultException e) {
-                throw new CardException("No se econtro una tarjeta para el ID: " + idTarjeta + e.getMessage());
+                throw new CardException("No se econtro una tarjeta para el ID: " + idTarjeta + e.getMessage(), e);
 
             } catch (NonUniqueResultException e) {
-                throw new CardException("Se encontraron múltiples resultados para este ID de clientes o tarjeta: " + e.getMessage());
+                throw new CardException("Se encontraron múltiples resultados para este ID de clientes o tarjeta: " + e.getMessage(), e);
 
             } catch (PersistenceException e) {
-                throw new SaleException("Error al querer calcular el monto de la venta: " + e.getMessage());
+                throw new SaleException("Error al querer calcular el monto de la venta: " + e.getMessage(), e);
             }
         });
 
@@ -209,7 +218,7 @@ public class SaleServiceImpl implements SaleService {
                 productDiscounts.addAll(em.createQuery("SELECT pd FROM ProductDiscount pd", ProductDiscount.class).getResultList());
 
             } catch (PersistenceException e){
-                throw new DiscountException("Error al recuperar los descuentos: " + e.getMessage());
+                throw new DiscountException("Error al recuperar los descuentos: " + e.getMessage(), e);
             }
         });
 
@@ -225,25 +234,25 @@ public class SaleServiceImpl implements SaleService {
 
         this.transactionService.executeInTransaction(em -> {
 
-                for (Long idProduct : idProducts) {
-                    try {
-                        Product product = em.find(Product.class, idProduct);
+            for (Long idProduct : idProducts) {
+                try {
+                    Product product = em.find(Product.class, idProduct);
 
-                        if (product == null)
-                            throw new ProductException("Producto no encontrado: " + idProduct);
+                    if (product == null)
+                        throw new ProductException("Producto no encontrado: " + idProduct);
 
-                        productsList.add(product);
+                    productsList.add(product);
 
-                    } catch (NoResultException e) {
-                        throw new ProductException("No se econtro una tarjeta para el ID: " + idProduct + e.getMessage());
+                } catch (NoResultException e) {
+                    throw new ProductException("No se econtro una tarjeta para el ID: " + idProduct + e.getMessage(), e);
 
-                    } catch (NonUniqueResultException e) {
-                        throw new ProductException("Se encontraron múltiples resultados para este ID de clientes o tarjeta: " + e.getMessage());
+                } catch (NonUniqueResultException e) {
+                    throw new ProductException("Se encontraron múltiples resultados para este ID de clientes o tarjeta: " + e.getMessage(), e);
 
-                    } catch (PersistenceException e){
-                        throw new ProductException("Error al buscar producto: " + e.getMessage());
-                    }
+                } catch (PersistenceException e){
+                    throw new ProductException("Error al buscar producto: " + e.getMessage(), e);
                 }
+            }
         });
 
         return productsList;
